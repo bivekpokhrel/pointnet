@@ -13,7 +13,7 @@ from torch.autograd import Variable
 import numpy as np
 import torch.nn.functional as F
 from sklearn.model_selection import train_test_split
-# from my_point_net import *
+from my_point_net import *
 import matplotlib.pyplot as plt
 from pprint import pprint
 from tqdm import tqdm
