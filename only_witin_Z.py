@@ -3,8 +3,7 @@ import os
 import torch
 import shutil
 #
-# # Modified_trans_folder_path = "/Users/bivekpokhrel/PycharmProjects/database/data/trans_folder/1c17.pdb"
-# output_folder='/Users/bivekpokhrel/PycharmProjects/database/data/new_z_trans/1c17.pdb'
+
 def get_boundary(pdb_path):
     pdb_file = pdb_path
     print(pdb_file)
@@ -18,26 +17,9 @@ def get_boundary(pdb_path):
             if ' DUM' in line:
                 z_coord.append(float(line[46:54]))
         return min(z_coord), max(z_coord)
-            #
-            #     columns = line.split()
-            #     print(columns)
-            #
-            #     if columns[3] == desired_atom_name:
-            #
-            #         value = float(columns[7])
-            #         if value is not None:
-            #             return abs(value)
-            #         else :
-            #             return 100.00
-            #     if columns[2] == desired_atom_name:
-            #         value = float(columns[6])
-            #         if value is not None:
-            #             return abs(value)
-            #         else :
-            #             return 100.00
 
 
-#
+
 
 def create_modified_pdb(pdb_path, output_folder, margin = 3.00):
     margin = margin
@@ -55,13 +37,13 @@ def create_modified_pdb(pdb_path, output_folder, margin = 3.00):
             modified_lines = []
             for line in lines:
                 if line.startswith('ATOM'):
-                    # columns = line.split()
+
                     z = float(line[47:54])
-                    # print(z)
+
                     try:
 
                         if z <= max_z_threshold and z >= min_z_threshold:
-                            # print(line)
+
                             modified_lines.append(line)
                         else:
                             continue  # Keep the line as is
@@ -136,119 +118,8 @@ protein_path4='/Users/bivekpokhrel/PycharmProjects/database/data/trans_folder/3h
 # create_modified_pdb('/Users/bivekpokhrel/PycharmProjects/database/data/trans_folder/5aji.pdb','/Users/bivekpokhrel/PycharmProjects/database/data/Z_trans_folder')
 
 
-# def parsePDB(PDBFile,keep_only_chains=None,keep_hetatm=False,bb_only=False):
-#     """
-#     function to parse pdb files. It can be used to parse a single file or all the pdb files in a folder. In case a folder is given, the coordinates are gonna be padded
-#
-#     Parameters
-#     ----------
-#     PDBFile : str
-#     path of the PDB file or of the folder containing multiple PDB files
-#     bb_only : bool
-#     if True ignores all the atoms but backbone N, C and CA
-#     keep_only_chains : str or None
-#     ignores all the chain but the one given. If None it keeps all chains
-#     keep_hetatm : bool
-#     if False it ignores heteroatoms
-#     Returns
-#     -------
-#     coords : torch.Tensor
-#     coordinates of the atoms in the pdb file(s). Shape ( batch, numberOfAtoms, 3)
-#
-#     atomNames : list
-#     a list of the atom identifier. It encodes atom type, residue type, residue position and chain
-#
-#     """
-#     PADDING_INDEX = 999.0
-#     NONEXISTING_HASH = -1
-#     MISSING_ATOM = -999
-#     NON_ACCEPTABLE_ENERGY = 999
-#     NON_ACCEPTABLE_DISTANCE = 999
-#     MISSING_INDEX = -1
-#
-#     EPS = 0.00001
-#
-#     bbatoms = ["N", "CA", "C"]
-#     if not os.path.isdir(PDBFile):
-#         fil = PDBFile
-#         coords = []
-#         atomNames = []
-#         cont = -1
-#         oldres = -999
-#         for line in open(fil).readlines():
-#
-#             if line[:4] == "ATOM":
-#                 if keep_only_chains is not None and (not line[21] in keep_only_chains):
-#                     continue
-#                 if bb_only and not line[12:16].strip() in bbatoms:
-#                     continue
-#                 if oldres != int(line[22:26]):
-#                     cont += 1
-#                     oldres = int(line[22:26])
-#                 resnum = int(line[22:26])
-#                 atomNames += [line[17:20].strip() + "_" + str(resnum) + "_" + line[12:16].strip() + "_" + line[21]]
-#
-#                 x = float(line[30:38])
-#                 y = float(line[38:46])
-#                 z = float(line[47:54])
-#                 coords += [[x, y, z]]
-#
-#             elif line[:6] == "HETATM" and keep_hetatm:
-#
-#                 resname_het = line[17:20].strip()
-#                 resnum = int(line[22:26])
-#                 x = float(line[30:38])
-#                 y = float(line[38:46])
-#                 z = float(line[47:54])
-#                 coords += [[x, y, z]]
-#                 atnameHet = line[12:16].strip()
-#                 atomNames += [resname_het + "_" + str(resnum) + "_" + atnameHet + "_" + line[21]]
-#         return torch.tensor(coords).unsqueeze(0), [atomNames]
-#     else:
-#         coords = []
-#         atomNames = []
-#
-#         for fil in sorted(os.listdir(PDBFile)):
-#
-#             atomNamesTMP = []
-#             coordsTMP = []
-#             cont = -1
-#             oldres = -999
-#             for line in open(PDBFile + "/" + fil).readlines():
-#
-#                 if line[:4] == "ATOM":
-#                     if keep_only_chains is not None and (not line[21] in keep_only_chains):
-#                         continue
-#                     if bb_only and not line[12:16].strip() in bbatoms:
-#                         continue
-#                     if oldres != int(line[22:26]):
-#                         cont += 1
-#                         oldres = int(line[22:26])
-#
-#                     resnum = int(line[22:26])
-#                     atomNamesTMP += [
-#                         line[17:20].strip() + "_" + str(resnum) + "_" + line[12:16].strip() + "_" + line[21]]
-#
-#                     x = float(line[30:38])
-#                     y = float(line[38:46])
-#                     z = float(line[47:54])
-#                     coordsTMP += [[x, y, z]]
-#
-#                 elif line[:6] == "HETATM" and keep_hetatm:
-#                     if line[17:20].strip() != "GTP":
-#                         continue
-#                     x = float(line[30:38])
-#                     y = float(line[38:46])
-#                     z = float(line[47:54])
-#                     resnum = int(line[22:26])
-#                     coordsTMP += [[x, y, z]]
-#                     atnameHet = line[12:16].strip()
-#                     atomNamesTMP += ["HET_" + str(resnum) + "_" + atnameHet + "_" + line[21]]
-#             coords += [torch.tensor(coordsTMP)]
-#             atomNames += [atomNamesTMP]
-#         return coords
 
-        # return torch.torch.nn.utils.rnn.pad_sequence(coords, batch_first=True, padding_value=PADDING_INDEX), atomNames
+
 # print(get_boundary('/Users/bivekpokhrel/PycharmProjects/database/data/trans_folder/5aji.pdb'))
 # coords,_=parsePDB(protien_path3)
 # print(len(coords))
